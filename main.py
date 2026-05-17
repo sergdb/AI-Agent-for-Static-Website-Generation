@@ -65,7 +65,7 @@ Rules:
 - You can write only one CSS file named styles.css
 - You can write only one JS file named scripts.js
 - Do not add images or other media files. 
-- This year is 2026
+- Don't create footer
 
 User request:
 """
