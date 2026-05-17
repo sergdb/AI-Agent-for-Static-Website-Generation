@@ -1,40 +1,25 @@
 from langchain_core.tools import tool
 from pathlib import Path
-
+from langchain.agents import create_agent
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
 @tool
 def write_file(path: str, content: str) -> str:
-    """Write any file (HTML, CSS, JS, JSON, etc.)"""
+    """Write a file (HTML, CSS, JS)"""
     Path("output").mkdir(exist_ok=True)
     full_path = Path("output") / path
     full_path.write_text(content, encoding="utf-8")
     return f"written: {path}"
 
-@tool
-def write_many(files: list[dict]) -> str:
-    """
-    Write multiple files.
-    Input: [{"path": "...", "content": "..."}]
-    """
-    Path("output").mkdir(exist_ok=True)
-
-    for f in files:
-        (Path("output") / f["path"]).write_text(f["content"], encoding="utf-8")
-
-    return f"written {len(files)} files"
-
-from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0.8)
 
-from langchain.agents import create_agent
-
 agent = create_agent(
     model=llm,
-    tools=[write_file, write_many]
+    tools=[write_file]
 )
 
 prompt = """
@@ -42,13 +27,11 @@ You are an autonomous web development agent.
 
 You can create any kind of static website.
 
-You decide:
+You decide unless the user specifies otherwise:
 - HTML structure
 - CSS styling
 - layout system
 - visual style
-
-You are NOT restricted to any template or format.
 
 You may:
 - create JavaScript file
